@@ -21,6 +21,9 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
     uint256 public nextAuctionId;
     mapping(uint256 => Auction) public auctions;
 
+    // 提取模式存储：用户待领取的退款
+    mapping(address => uint256) public pendingReturns;
+
     /** 
      * @dev 创建拍卖
      * @param nft NFT 合约地址
@@ -39,6 +42,13 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
         // 确认 msg.sender 是当前 NFT owner
         require(nftContract.ownerOf(tokenId) == msg.sender, "not owner");
 
+        //NFT 是否授权给拍卖合约
+        require(
+            nftContract.getApproved(tokenId) == address(this) ||
+            nftContract.isApprovedForAll(msg.sender, address(this)),
+            "auction not approved"
+        );
+
         // 把 NFT 转到拍卖合约里托管
         nftContract.safeTransferFrom(msg.sender, address(this), tokenId);
 
@@ -53,7 +63,10 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
 
         return auctionId;
      }
-
+     /**
+     * @dev 出价(退款使用提取模式)
+     * @param auctionId 出价方账户地址
+     */
      function bid(uint256 auctionId) external payable nonReentrant {
         Auction storage a = auctions[auctionId];
 
@@ -65,8 +78,7 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
 
         // 退还上一位出价者支付得金额
         if (a.highestBidder != address(0)) { // 首次出价，不用退款
-            (bool refundOk, ) = a.highestBidder.call{value: a.highestBid}("");
-            require(refundOk, "refund failed");
+            pendingReturns[a.highestBidder] += a.highestBid;
         }
 
         a.highestBidder = msg.sender;
@@ -94,9 +106,8 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
             // 把 NFT 转给获胜者
             nftContract.safeTransferFrom(address(this), a.highestBidder, a.tokenId);
 
-            // 把 ETH 转给卖家
-            (bool ok, ) = a.seller.call{value: a.highestBid}("");
-            require(ok, "pay seller failed");
+            // 卖家的金额进入待提取（避免付款被阻塞）
+            pendingReturns[a.seller] += a.highestBid;
         } else {
             // 没人出价，退回 NFT
             nftContract.safeTransferFrom(address(this), a.seller, a.tokenId);
@@ -117,6 +128,20 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
         a.settled = true;
 
         MyNFT nftContract = MyNFT(a.nft);
-        nftContract.transferFrom(address(this), a.seller, a.tokenId);
+        nftContract.safeTransferFrom(address(this), a.seller, a.tokenId);
+    }
+
+     /**
+     * @dev 提取退款
+     */
+    function withdraw() external nonReentrant {
+        uint256 amount = pendingReturns[msg.sender];
+        require(amount > 0, "no funds");
+
+        //先清零（避免重入）
+        pendingReturns[msg.sender] = 0;
+
+        (bool ok, ) = msg.sender.call{value: amount}("");
+        require(ok, "withdraw failed");
     }
 }
