@@ -76,6 +76,9 @@ contract NftAuction is ReentrancyGuard, ERC721Holder {
         require(msg.value >= a.minBid, "bid < minBid");
         require(msg.value > a.highestBid, "bid not highest");
 
+        // 每次出价，最低幅度不能低于上一个出价的10%
+        require(msg.value >= a.highestBid + (a.highestBid / 10),"bid too small");
+
         // 退还上一位出价者支付得金额
         if (a.highestBidder != address(0)) { // 首次出价，不用退款
             pendingReturns[a.highestBidder] += a.highestBid;
