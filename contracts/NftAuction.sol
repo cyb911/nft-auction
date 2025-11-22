@@ -1,0 +1,122 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "./MyNFT.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+
+contract NftAuction is ReentrancyGuard, ERC721Holder {
+    struct Auction {
+        address seller;         // 卖家
+        address nft;            // NFT 合约地址
+        uint256 tokenId;        // NFT 的 tokenId
+        uint256 minBid;         // 起拍价（单位：wei）
+        uint64  endTime;        // 结束时间戳
+        bool    settled;        // 是否已结算
+        address highestBidder;  // 当前最高出价者
+        uint256 highestBid;     // 当前最高出价金额
+    }
+
+    // 拍卖 ID 自增
+    uint256 public nextAuctionId;
+    mapping(uint256 => Auction) public auctions;
+
+    /** 
+     * @dev 创建拍卖
+     * @param nft NFT 合约地址
+     * @param tokenId NFT 合约地址
+     * @param minBid 起拍价（wei）
+     * @param duration 拍卖持续时间（秒）
+     * PS： 需要NFT所有者先进行approve 给本合约，本函数需要对NFT进行所有者判断。确保NFT资产不会被其他人创建拍卖
+     */
+     function createAuction(address nft,uint256 tokenId,uint256 minBid,uint64 duration) 
+     external returns (uint256) {
+        require(duration > 0, "duration must > 0");
+        require(minBid > 0, "minBid must > 0");
+
+        MyNFT nftContract = MyNFT(nft);
+
+        // 确认 msg.sender 是当前 NFT owner
+        require(nftContract.ownerOf(tokenId) == msg.sender, "not owner");
+
+        // 把 NFT 转到拍卖合约里托管
+        nftContract.safeTransferFrom(msg.sender, address(this), tokenId);
+
+        uint256 auctionId = nextAuctionId++;
+        Auction storage a = auctions[auctionId];
+
+        a.seller = msg.sender;
+        a.nft = nft;
+        a.tokenId = tokenId;
+        a.minBid = minBid;
+        a.endTime = uint64(block.timestamp) + duration;
+
+        return auctionId;
+     }
+
+     function bid(uint256 auctionId) external payable nonReentrant {
+        Auction storage a = auctions[auctionId];
+
+        require(a.seller != address(0), "auction not exist");
+        require(block.timestamp < a.endTime, "auction ended");
+        require(!a.settled, "auction settled");
+        require(msg.value >= a.minBid, "bid < minBid");
+        require(msg.value > a.highestBid, "bid not highest");
+
+        // 退还上一位出价者支付得金额
+        if (a.highestBidder != address(0)) { // 首次出价，不用退款
+            (bool refundOk, ) = a.highestBidder.call{value: a.highestBid}("");
+            require(refundOk, "refund failed");
+        }
+
+        a.highestBidder = msg.sender;
+        a.highestBid = msg.value;
+
+     }
+
+    /**
+     * @dev 结算拍卖
+     * - 如果有最高出价者：NFT -> winner，ETH -> seller
+     * - 如果没人出价：NFT 退还给 seller
+     */
+     function settleAuction(uint256 auctionId) external nonReentrant {
+        Auction storage a = auctions[auctionId];
+
+        require(a.seller != address(0), "auction not exist");
+        require(block.timestamp >= a.endTime, "auction not ended");
+        require(!a.settled, "already settled");
+        
+        a.settled = true;
+
+        MyNFT nftContract = MyNFT(a.nft);
+
+        if (a.highestBidder != address(0)) {
+            // 把 NFT 转给获胜者
+            nftContract.safeTransferFrom(address(this), a.highestBidder, a.tokenId);
+
+            // 把 ETH 转给卖家
+            (bool ok, ) = a.seller.call{value: a.highestBid}("");
+            require(ok, "pay seller failed");
+        } else {
+            // 没人出价，退回 NFT
+            nftContract.safeTransferFrom(address(this), a.seller, a.tokenId);
+        }
+     }
+
+     /**
+     * @dev 取消拍卖（只允许在没人出价时取消）
+     */
+    function cancelAuction(uint256 auctionId) external nonReentrant {
+        Auction storage a = auctions[auctionId];
+
+        require(a.seller != address(0), "auction not exist");
+        require(msg.sender == a.seller, "not seller");
+        require(!a.settled, "already settled");
+        require(a.highestBidder == address(0), "already has bid");
+
+        a.settled = true;
+
+        MyNFT nftContract = MyNFT(a.nft);
+        nftContract.transferFrom(address(this), a.seller, a.tokenId);
+    }
+}
