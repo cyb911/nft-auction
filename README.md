@@ -14,7 +14,7 @@ npm install dotenv --save-dev
 
 openzeppelin
 ```shell
-npm install @openzeppelin/contracts @openzeppelin/contracts-upgradeable
+npm install @openzeppelin/contracts-upgradeable@latest
 ```
 
 项目启动  
