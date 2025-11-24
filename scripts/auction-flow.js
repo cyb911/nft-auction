@@ -4,7 +4,7 @@ const { ethers, network } = hre;
 // NFT合约地址
 const nftAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 // 拍卖合约地址
-const auctionAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+const auctionAddress = "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82";
 
 async function main() {
     console.log("=== script start ===");
@@ -15,7 +15,7 @@ async function main() {
 
     // 获取合约得地址
     const nft = await ethers.getContractAt("MyNFT",nftAddress);
-    const auction = await ethers.getContractAt("NftAuction",auctionAddress);
+    const auction = await ethers.getContractAt("NftAuctionV1",auctionAddress);
 
     // 铸造一个NFT
     const mintNFT = await nft.connect(seller).mint(seller.address);
@@ -47,7 +47,7 @@ async function main() {
     .createAuction(nftAddress, tokenId, minBid, duration);
     await createTx.wait();
 
-    const nextId = await auction.nextAuctionId();
+    const nextId = await auction.getNextAuctionId();
     const auctionId = nextId - 1n;
 
     console.log("auction created, auctionId:", auctionId.toString());

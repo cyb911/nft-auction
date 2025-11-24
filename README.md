@@ -15,6 +15,7 @@ npm install dotenv --save-dev
 openzeppelin
 ```shell
 npm install @openzeppelin/contracts-upgradeable@latest
+npm install --save-dev @openzeppelin/hardhat-upgrades
 ```
 
 项目启动  
@@ -29,7 +30,7 @@ NFT合约
 ```shell
 npx hardhat run .\scripts\deploy-nft.js --network localhost
 ```
-拍卖合约  
+拍卖合约V1  
 ```shell
 npx hardhat run .\scripts\deploy-acutionV1.js --network localhost
 ```

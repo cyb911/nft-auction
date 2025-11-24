@@ -183,4 +183,8 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
         (bool ok, ) = msg.sender.call{value: amount}("");
         require(ok, "withdraw failed");
     }
+
+    function getNextAuctionId() external view returns(uint256) {
+        return _getStorage().nextAuctionId;
+    }
 }
