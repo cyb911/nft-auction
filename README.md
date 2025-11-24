@@ -18,19 +18,20 @@ npm install @openzeppelin/contracts-upgradeable@latest
 ```
 
 项目启动  
-1.启动Hardhot本地网络（本地测试需要）
+1.启动Hardhat本地网络（本地测试需要）
 ```shell
 npx hardhat node
 ```
 
-2.部署NFT合约脚本
+2.部署NFT合约脚本  
+PS: 部署前先启动 hardhat 本地网络，或者保证有其他可用网络
 NFT合约  
 ```shell
 npx hardhat run .\scripts\deploy-nft.js --network localhost
 ```
 拍卖合约  
 ```shell
-npx hardhat run .\scripts\deploy-acution.js --network localhost
+npx hardhat run .\scripts\deploy-acutionV1.js --network localhost
 ```
 执行模拟测试脚本  
 ```shell
