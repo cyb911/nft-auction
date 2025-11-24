@@ -31,6 +31,10 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
     // keccak256("nft-auction.storage.main")
     bytes32 private constant STORAGE_POSITION = 0xd3aa3faf77c45e7e5cacaa6f46bbf7a522da316b92ce40938e425c205b5fff00;
 
+    /** 
+     * @dev 获取合约 storage 指针
+     * @param $ NFT 合约地址
+     */
     function _getStorage() private pure returns (AuctionStorage storage $) {
         bytes32 position = STORAGE_POSITION;
         assembly {
