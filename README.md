@@ -18,6 +18,11 @@ npm install @openzeppelin/contracts-upgradeable@latest
 npm install --save-dev @openzeppelin/hardhat-upgrades
 ```
 
+预言机依赖（Hardhat 环境）
+```shell
+npm install @chainlink/contracts
+```
+
 项目启动  
 1.启动Hardhat本地网络（本地测试需要）
 ```shell
@@ -37,4 +42,11 @@ npx hardhat run .\scripts\deploy-acutionV1.js --network localhost
 执行模拟测试脚本  
 ```shell
 npx hardhat run .\scripts\auction-flow.js --network localhost
+```
+
+部署升级合约V2
+
+本地模拟预言机合约
+```shell
+npx hardhat run .\test\deploy-mock.js --network localhost
 ```
