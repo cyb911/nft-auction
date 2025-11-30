@@ -1,5 +1,16 @@
 # Sample Hardhat Project
 
+## 📦 项目结构
+```
+    ├── contracts                   (合约)
+        ├── interfaces              (合约接口)
+    ├── scripts                     (部署脚本)  
+    ├── test                        (单元测试用例)
+        ├── config.js               (模块配置参数)
+        ├── deploy-mock.js          (MOCK 预言机合约部署脚本)                           
+        ├── NftAuctionV2.test.js    (V2合约测试脚本)                        
+    ├── hardhat.config.js           (Hardhat项目配置)                                                                                       
+
 项目依赖安装  
 Hardhat 2
 ```shell
