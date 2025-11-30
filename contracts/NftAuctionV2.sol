@@ -10,11 +10,12 @@ contract NftAuctionV2 is NftAuctionV1 {
 
     struct AuctionStorageV2 {
         address ethUsdPriceFeed; // Chainlink ETH/USD oracle 地址
+        bool initializedV2; // 知否已经成功初始化。
     }
 
     /** 
-     * @dev 获取合约 storage 指针
-     * @param $ NFT 合约地址
+     * @dev 获取 V2 的独立存储槽
+     * @param $ 指向 V2 storage 的内部指针
      */
     function _getStorageV2() private pure returns (AuctionStorageV2 storage $) {
         bytes32 position = STORAGE_POSITION_V2;
@@ -23,11 +24,18 @@ contract NftAuctionV2 is NftAuctionV1 {
         }
     }
 
+    function isV2Initialized() external view returns (bool) {
+        return _getStorageV2().initializedV2;
+    }
+
     // 升级版初始化函数
     function initializeV2(address _ethUsdFeed) public reinitializer(2) {
         require(_ethUsdFeed != address(0), "invalid feed");
         AuctionStorageV2 storage s2 = _getStorageV2();
+
+        require(!s2.initializedV2, "V2 already initialized");
         s2.ethUsdPriceFeed = _ethUsdFeed;
+        s2.initializedV2 = true;
     }
 
     /** 

@@ -50,3 +50,13 @@ npx hardhat run .\scripts\auction-flow.js --network localhost
 ```shell
 npx hardhat run .\test\deploy-mock.js --network localhost
 ```
+
+v2版本合约升级部署
+```shell
+npx hardhat run .\scripts\deploy-acutionV2.js --network localhost
+```
+执行测试用例：
+```shell
+npx hardhat test test/NftAuctionV2.test.js --network localhost
+```
+
