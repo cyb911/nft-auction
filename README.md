@@ -9,7 +9,8 @@
         ├── config.js               (模块配置参数)
         ├── deploy-mock.js          (MOCK 预言机合约部署脚本)                           
         ├── NftAuctionV2.test.js    (V2合约测试脚本)                        
-    ├── hardhat.config.js           (Hardhat项目配置)                                                                                       
+    ├── hardhat.config.js           (Hardhat项目配置)                                            
+```                                           
 
 项目依赖安装  
 Hardhat 2
