@@ -3,7 +3,7 @@ const { ethers, upgrades } = require("hardhat");
 async function main() {
   console.log("==== Upgrade to NftAuctionV2 ====");
   // 获取 Proxy 地址
-  const proxyAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+  const proxyAddress = "0xC6Ab7C475311c3B9772c7dD90b11F10fBe5650e8";
   // 预言机地址
   const mockFeedAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
 

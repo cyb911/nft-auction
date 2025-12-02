@@ -11,7 +11,7 @@ module.exports = {
     localhost: {},// 使用本地网络
     sepolia: {
       url: RPC_URL || "",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      accounts: [PRIVATE_KEY, BIDDER_KEY].filter(Boolean),
     }
   }
 };
