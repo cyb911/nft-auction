@@ -72,3 +72,8 @@ npx hardhat run .\scripts\deploy-acutionV2.js --network localhost
 npx hardhat test test/NftAuctionV2.test.js --network localhost
 ```
 
+安装abigen
+```shell
+go install github.com/ethereum/go-ethereum/cmd/abigen@latest
+abigen --version
+```

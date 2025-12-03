@@ -9,5 +9,9 @@
     "@chainlink/contracts": "^1.5.0",
     "@openzeppelin/contracts": "^5.4.0",
     "@openzeppelin/contracts-upgradeable": "^5.4.0"
+  },
+  "scripts": {
+    "export": "node scripts/export-artifact.js",
+    "binding:go": "abigen --abi ./go-binding/NftAuctionV1.abi --bin ./go-binding/NftAuctionV1.bin --pkg nftauction --out ./go-binding/nftauction.go"
   }
 }
