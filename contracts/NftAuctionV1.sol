@@ -54,6 +54,16 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
         // 空函数体
     }
 
+    // 创建合约事件
+    event AuctionCreated(
+    uint256 indexed auctionId,
+    address indexed seller,
+    address indexed nft,
+    uint256 tokenId,
+    uint256 minBid,
+    uint64 endTime
+);
+
     /** 
      * @dev 创建拍卖
      * @param nft NFT 合约地址
@@ -92,6 +102,9 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
         a.tokenId = tokenId;
         a.minBid = minBid;
         a.endTime = uint64(block.timestamp) + duration;
+
+        // 事件
+        emit AuctionCreated(auctionId, msg.sender, nft, tokenId, minBid, a.endTime);
 
         return auctionId;
      }

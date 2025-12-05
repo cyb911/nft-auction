@@ -22,7 +22,7 @@ describe("NftAuction V1 测试", function () {
     it("NFT 授权给 NftAuction", async function () {
         // 将NFT资产授权给拍卖合约
         console.log("auctionAddress:", config.proxyAddress);
-        const tx = await nft.connect(owner).approve(config.proxyAddress, 2);
+        const tx = await myNft.connect(owner).approve(config.proxyAddress, 2);
         const receipt = await tx.wait();
         console.log("approve 成功，gasUsed:", receipt.gasUsed.toString());
     });

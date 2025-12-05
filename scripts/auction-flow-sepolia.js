@@ -3,7 +3,7 @@ const { ethers, network } = require("hardhat");
 // NFT合约地址
 const nftAddress = "0x604FEa51ab6743621FE804F2891f1898060741E8";
 // 拍卖合约地址（代理合约地址）
-const auctionAddress = "0xc2c0d3F53A7D737C8146Fe1A5d3eC2eBb05b6E80";
+const auctionAddress = "0xD1B8Dc552131A1e999af04Ef43d0453281f5f202";
 
 async function main() {
     console.log("=== script start ===");

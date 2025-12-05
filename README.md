@@ -82,3 +82,7 @@ NFT 铸造
 ```shell
 npx hardhat test .\test\MyNFT.test.js --network sepolia
 ```
+合约通用升级脚本（小幅改动）
+```shell
+npx hardhat run .\scripts\deploy-acution-upgrade.js --network sepolia
+```
