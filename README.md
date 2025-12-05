@@ -77,3 +77,8 @@ npx hardhat test test/NftAuctionV2.test.js --network localhost
 go install github.com/ethereum/go-ethereum/cmd/abigen@latest
 abigen --version
 ```
+
+NFT 铸造
+```shell
+npx hardhat test .\test\MyNFT.test.js --network sepolia
+```
