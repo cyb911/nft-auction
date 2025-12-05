@@ -23,11 +23,11 @@ describe("NFT 合约测试", function () {
                 console.log("tokenId:", event.args.tokenId.toString());
                 }
             } catch (_) {}
-}
+        }
 
         const event = receipt.logs.find(log => log.fragment?.name === "Transfer");
         console.log("tokenId:", event.args.tokenId.toString());
-    })
+    });
 });
 
 async function getSignersSmart() {
