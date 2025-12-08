@@ -22,15 +22,28 @@ describe("NftAuction V1 测试", function () {
     it("NFT 授权给 NftAuction", async function () {
         // 将NFT资产授权给拍卖合约
         console.log("auctionAddress:", config.proxyAddress);
-        const tx = await myNft.connect(owner).approve(config.proxyAddress, 2);
+        const tx = await myNft.connect(owner).approve(config.proxyAddress, 3);
         const receipt = await tx.wait();
         console.log("approve 成功，gasUsed:", receipt.gasUsed.toString());
     });
 
-    it.only("查询 NFT 授权给who", async function () {
-        const tokenId = 2;
+    it("查询 NFT 授权给who", async function () {
+        const tokenId = 3;
         const approved = await myNft.getApproved(tokenId);
         console.log(`tokenId ${tokenId} 授权给地址:`, approved);
+    });
+
+    it.only("创建拍拍卖", async function () {
+        const minBid = ethers.parseEther("0.1");
+        const duration = 60 * 2; // 2 分钟
+        const tokenId = 3;
+        const createTx = await auction.connect(owner).createAuction(config.nftAddress, tokenId, minBid, duration);
+        await createTx.wait();
+        
+        const nextId = await auction.getNextAuctionId();
+        const auctionId = nextId - 1n;
+        
+        console.log("auction created, auctionId:", auctionId.toString());
     });
 });
 
