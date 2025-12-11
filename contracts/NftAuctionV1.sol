@@ -117,6 +117,7 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
         Auction storage a = s.auctions[auctionId];
 
         require(a.seller != address(0), "auction not exist");
+        require(msg.sender != a.seller, "seller cannot bid");
         require(block.timestamp < a.endTime, "auction ended");
         require(!a.settled, "auction settled");
         require(msg.value >= a.minBid, "bid < minBid");
