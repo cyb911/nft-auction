@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./MyNFT.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -79,7 +79,7 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
 
         AuctionStorage storage s = _getStorage();
 
-        MyNFT nftContract = MyNFT(nft);
+        IERC721 nftContract = IERC721(nft);
 
         // 确认 msg.sender 是当前 NFT owner
         require(nftContract.ownerOf(tokenId) == msg.sender, "not owner");
@@ -151,7 +151,7 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
         
         a.settled = true;
 
-        MyNFT nftContract = MyNFT(a.nft);
+        IERC721 nftContract = IERC721(a.nft);
 
         if (a.highestBidder != address(0)) {
             // 把 NFT 转给获胜者
@@ -179,7 +179,7 @@ contract NftAuctionV1 is Initializable,UUPSUpgradeable,OwnableUpgradeable,Reentr
 
         a.settled = true;
 
-        MyNFT nftContract = MyNFT(a.nft);
+        IERC721 nftContract = IERC721(a.nft);
         nftContract.safeTransferFrom(address(this), a.seller, a.tokenId);
     }
 
